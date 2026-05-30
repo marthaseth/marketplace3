@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Enter Product — The Collection</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Josefin+Sans:wght@200;300;400&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0b0b0d;
+      --surface: #111115;
+      --card: #16161c;
+      --border: rgba(255,255,255,0.06);
+      --border-focus: rgba(200,169,110,0.5);
+      --accent: #c8a96e;
+      --accent-dim: rgba(200,169,110,0.15);
+      --text: #e8e4dc;
+      --muted: #7a7670;
+      --error: #c06060;
+      --error-dim: rgba(192,96,96,0.12);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Josefin Sans', sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Noise grain overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 999;
+      opacity: 0.4;
+    }
+
+    /* ── Header ── */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 2.4rem 5vw;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: rgba(11,11,13,0.88);
+      backdrop-filter: blur(12px);
+      z-index: 100;
+    }
+
+    .logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      font-weight: 300;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .logo span { color: var(--accent); }
+
+    .btn-back {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 0.62rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 0.6rem 1.5rem;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      text-decoration: none;
+      transition: border-color 0.25s, color 0.25s;
+    }
+
+    .btn-back:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* ── Page hero ── */
+    .page-hero {
+      text-align: center;
+      padding: 5rem 5vw 4rem;
+      position: relative;
+    }
+
+    .page-hero::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 1px;
+      height: 4rem;
+      background: linear-gradient(to bottom, transparent, var(--accent));
+    }
+
+    .page-eyebrow {
+      font-size: 0.65rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.2rem;
+    }
+
+    .page-hero h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 300;
+      line-height: 1.1;
+      color: var(--text);
+    }
+
+    .page-hero h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .page-sub {
+      margin-top: 1rem;
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    /* ── Form wrapper ── */
+    .form-section {
+      padding: 0 5vw 8rem;
+      display: flex;
+      justify-content: center;
+    }
+
+    .form-card {
+      width: 100%;
+      max-width: 720px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 3.5rem 3.5rem 4rem;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Section dividers inside form ── */
+    .form-section-label {
+      font-size: 0.58rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.7rem;
+      margin-bottom: 2rem;
+      margin-top: 3rem;
+    }
+
+    .form-section-label:first-of-type { margin-top: 0; }
+
+    /* ── Field groups ── */
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .field-row.full { grid-template-columns: 1fr; }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+
+    label {
+      font-size: 0.6rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    label .req {
+      color: var(--accent);
+      margin-left: 0.2rem;
+    }
+
+    input,
+    textarea,
+    select {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 300;
+      letter-spacing: 0.05em;
+      padding: 0.85rem 1rem;
+      outline: none;
+      transition: border-color 0.25s, background 0.25s;
+      width: 100%;
+      appearance: none;
+    }
+
+    input::placeholder,
+    textarea::placeholder { color: var(--muted); opacity: 0.6; }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: var(--border-focus);
+      background: #1a1a22;
+    }
+
+    input.invalid,
+    textarea.invalid,
+    select.invalid {
+      border-color: var(--error);
+      background: var(--error-dim);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 90px;
+      line-height: 1.6;
+    }
+
+    /* Custom select arrow */
+    .select-wrap { position: relative; }
+
+    .select-wrap::after {
+      content: '▾';
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      pointer-events: none;
+      font-size: 0.7rem;
+    }
+
+    select { cursor: pointer; padding-right: 2.5rem; }
+
+    select option { background: var(--card); }
+
+    /* Field hint */
+    .field-hint {
+      font-size: 0.57rem;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      opacity: 0.7;
+    }
+
+    /* Inline validation message */
+    .field-error {
+      font-size: 0.57rem;
+      letter-spacing: 0.1em;
+      color: var(--error);
+      display: none;
+    }
+
+    .field.has-error .field-error { display: block; }
+    .field.has-error label { color: var(--error); }
+
+    /* ── Image preview ── */
+    .img-preview-wrap {
+      margin-top: 0.8rem;
+      width: 100%;
+      aspect-ratio: 3/2;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .img-preview-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+      filter: saturate(0.6) brightness(0.85);
+      transition: opacity 0.3s;
+    }
+
+    .img-preview-wrap img.visible { display: block; }
+
+    .img-placeholder {
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      opacity: 0.5;
+    }
+
+    /* ── Submit button ── */
+    .form-actions {
+      margin-top: 3rem;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .btn-submit {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      padding: 1rem 3rem;
+      border: 1px solid var(--accent);
+      background: transparent;
+      color: var(--accent);
+      cursor: pointer;
+      transition: background 0.25s, color 0.25s;
+      position: relative;
+      min-width: 180px;
+    }
+
+    .btn-submit:hover:not(:disabled) {
+      background: var(--accent);
+      color: #0b0b0d;
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* spinner inside button */
+    .btn-submit .btn-spinner {
+      display: none;
+      width: 12px; height: 12px;
+      border: 1px solid rgba(200,169,110,0.3);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin-right: 0.6rem;
+      vertical-align: middle;
+    }
+
+    .btn-submit.loading .btn-spinner { display: inline-block; }
+    .btn-submit.loading .btn-label   { opacity: 0.5; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .form-note {
+      font-size: 0.58rem;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    /* ── Success overlay ── */
+    .success-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(11,11,13,0.92);
+      backdrop-filter: blur(10px);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      padding: 2rem;
+      animation: fadeIn 0.4s ease both;
+    }
+
+    .success-overlay.visible { display: flex; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    .success-icon {
+      width: 56px; height: 56px;
+      border: 1px solid var(--accent);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      color: var(--accent);
+      margin-bottom: 2rem;
+      animation: scaleIn 0.4s cubic-bezier(0.23,1,0.32,1) 0.1s both;
+    }
+
+    @keyframes scaleIn {
+      from { transform: scale(0.6); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+
+    .success-eyebrow {
+      font-size: 0.6rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+
+    .success-heading {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.6rem, 4vw, 2.8rem);
+      font-weight: 300;
+      color: var(--text);
+      margin-bottom: 0.8rem;
+    }
+
+    .success-sub {
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 2.5rem;
+    }
+
+    .success-bar {
+      width: 200px;
+      height: 1px;
+      background: var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .success-bar::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%;
+      height: 100%;
+      background: var(--accent);
+      animation: fillBar 3s linear 0.5s both;
+    }
+
+    @keyframes fillBar {
+      from { left: -100%; }
+      to   { left: 0%; }
+    }
+
+    .success-redirect {
+      margin-top: 1.2rem;
+      font-size: 0.58rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 3rem 5vw;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .footer-copy {
+      font-size: 0.62rem;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      .form-card { padding: 2rem 1.5rem 3rem; }
+      .field-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Header ── -->
+  <header>
+    <a href="index.html" class="logo">The<span>·</span>Collection</a>
+    <a href="index.html" class="btn-back">← Back to Collection</a>
+  </header>
+
+  <!-- ── Page hero ── -->
+  <div class="page-hero">
+    <p class="page-eyebrow">Curated Inventory</p>
+    <h1>Add a <em>new</em> piece</h1>
+    <p class="page-sub">Fields marked <span style="color:var(--accent)">✦</span> are required</p>
+  </div>
+
+  <!-- ── Form ── -->
+  <section class="form-section">
+    <div class="form-card">
+
+      <!-- Section: Product Identity -->
+      <p class="form-section-label">Product Identity</p>
+
+      <div class="field-row">
+        <div class="field" id="field-name">
+          <label for="card-name">Product Name <span class="req">✦</span></label>
+          <input type="text" id="card-name" name="card-name"
+                 placeholder="e.g. Obsidian Wool Coat" autocomplete="off"/>
+          <span class="field-error">Product name is required</span>
+        </div>
+
+        <div class="field" id="field-category">
+          <label for="card-category">Category <span class="req">✦</span></label>
+          <div class="select-wrap">
+            <select id="card-category" name="card-category">
+              <option value="" disabled selected>Select a category</option>
+              <option value="apparel">Apparel</option>
+              <option value="accessories">Accessories</option>
+              <option value="footwear">Footwear</option>
+              <option value="homeware">Homeware</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <span class="field-error">Please select a category</span>
+        </div>
+      </div>
+
+      <div class="field-row full">
+        <div class="field" id="field-desc">
+          <label for="desc">Description / Condition</label>
+          <textarea id="desc" name="desc"
+                    placeholder="e.g. Brand new, pre-loved, limited edition…"></textarea>
+          <span class="field-hint">Short note shown under the product name on the card</span>
+        </div>
+      </div>
+
+      <!-- Section: Pricing -->
+      <p class="form-section-label">Pricing</p>
+
+      <div class="field-row">
+        <div class="field" id="field-price">
+          <label for="price">Sale Price <span class="req">✦</span></label>
+          <input type="text" id="price" name="price"
+                 placeholder="e.g. $120 or ₩150,000"/>
+          <span class="field-error">Sale price is required</span>
+        </div>
+
+        <div class="field">
+          <label for="originalprice">Original Price <span style="font-size:0.5rem;opacity:.6">(optional)</span></label>
+          <input type="text" id="originalprice" name="originalprice"
+                 placeholder="e.g. $200 — shown as strikethrough"/>
+          <span class="field-hint">Leave blank if there is no original price</span>
+        </div>
+      </div>
+
+      <!-- Section: Presentation -->
+      <p class="form-section-label">Presentation</p>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="badge">Badge Label <span style="font-size:0.5rem;opacity:.6">(optional)</span></label>
+          <div class="select-wrap">
+            <select id="badge" name="badge">
+              <option value="">No badge</option>
+              <option value="New">New</option>
+              <option value="Sale">Sale</option>
+              <option value="Trending">Trending</option>
+              <option value="Limited">Limited</option>
+              <option value="Sold Out">Sold Out</option>
+            </select>
+          </div>
+          <span class="field-hint">Displayed as an overlay on the card image</span>
+        </div>
+
+        <div class="field" id="field-img">
+          <label for="img">Image URL <span class="req">✦</span></label>
+          <input type="url" id="img" name="img"
+                 placeholder="https://images.unsplash.com/…"
+                 oninput="previewImage(this.value)"/>
+          <span class="field-error">A valid image URL is required</span>
+        </div>
+      </div>
+
+      <!-- Image preview -->
+      <div class="img-preview-wrap" id="imgPreviewWrap">
+        <img id="imgPreview" alt="Image preview" onload="showPreview()" onerror="hidePreview()"/>
+        <span class="img-placeholder" id="imgPlaceholder">Image preview</span>
+      </div>
+
+      <!-- ── Actions ── -->
+      <div class="form-actions">
+        <button class="btn-submit" id="submitBtn" onclick="handleSubmit()">
+          <span class="btn-spinner"></span>
+          <span class="btn-label">Submit Product</span>
+        </button>
+        <span class="form-note">Product will appear after the sheet refreshes</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── Footer ── -->
+  <footer>
+    <div class="footer-logo">The · Collection</div>
+    <div class="footer-copy">© 2025 · All rights reserved</div>
+  </footer>
+
+  <!-- ── Success Overlay ── -->
+  <div class="success-overlay" id="successOverlay">
+    <div class="success-icon">✓</div>
+    <p class="success-eyebrow">Product Received</p>
+    <h2 class="success-heading">Added to the collection</h2>
+    <p class="success-sub" id="successProductName"></p>
+    <div class="success-bar"></div>
+    <p class="success-redirect">Returning to collection in 3 seconds…</p>
+  </div>
+
+  <script>
+    // ─────────────────────────────────────────────────────────────────────────
+    //  CONFIGURATION
+    //  Paste your deployed Google Apps Script Web App URL here.
+    // ─────────────────────────────────────────────────────────────────────────
+
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzOsjpbJcS1Jm9awq7YMRIfKHR1tSpy16EJMe28Da_Srsz88dnt2Cpjre5Y82pw8PcQTg/exec";
+
+    // ─────────────────────────────────────────────────────────────────────────
+    //  IMAGE PREVIEW
+    // ─────────────────────────────────────────────────────────────────────────
+
+    function previewImage(url) {
+      const img  = document.getElementById('imgPreview');
+      const ph   = document.getElementById('imgPlaceholder');
+      img.classList.remove('visible');
+      ph.style.display = 'block';
+      if (url) img.src = url;
+    }
+
+    function showPreview() {
+      document.getElementById('imgPreview').classList.add('visible');
+      document.getElementById('imgPlaceholder').style.display = 'none';
+    }
+
+    function hidePreview() {
+      document.getElementById('imgPreview').classList.remove('visible');
+      document.getElementById('imgPlaceholder').style.display = 'block';
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    //  VALIDATION
+    //  Returns true if all required fields pass, marks errors if not.
+    // ─────────────────────────────────────────────────────────────────────────
+
+    function validate() {
+      let valid = true;
+
+      const rules = [
+        { fieldId: 'field-name',     inputId: 'card-name',     check: v => v.trim() !== '' },
+        { fieldId: 'field-category', inputId: 'card-category', check: v => v !== '' },
+        { fieldId: 'field-price',    inputId: 'price',         check: v => v.trim() !== '' },
+        { fieldId: 'field-img',      inputId: 'img',           check: v => v.trim() !== '' },
+      ];
+
+      rules.forEach(({ fieldId, inputId, check }) => {
+        const field = document.getElementById(fieldId);
+        const input = document.getElementById(inputId);
+        if (!check(input.value)) {
+          field.classList.add('has-error');
+          input.classList.add('invalid');
+          valid = false;
+        } else {
+          field.classList.remove('has-error');
+          input.classList.remove('invalid');
+        }
+      });
+
+      return valid;
+    }
+
+    // Clear error state on input
+    ['card-name','card-category','price','img'].forEach(id => {
+      const el = document.getElementById(id);
+      el.addEventListener('input', () => {
+        el.classList.remove('invalid');
+        const fieldMap = {
+          'card-name': 'field-name', 'card-category': 'field-category',
+          'price': 'field-price', 'img': 'field-img'
+        };
+        document.getElementById(fieldMap[id])?.classList.remove('has-error');
+      });
+    });
+
+    // ─────────────────────────────────────────────────────────────────────────
+    //  SUBMIT HANDLER
+    // ─────────────────────────────────────────────────────────────────────────
+
+    async function handleSubmit() {
+      if (!validate()) return;
+
+      // Collect form values — names match the CSV column keys exactly
+      const data = {
+        'card-category': document.getElementById('card-category').value.trim(),
+        'card-name':     document.getElementById('card-name').value.trim(),
+        'desc':          document.getElementById('desc').value.trim(),
+        'price':         document.getElementById('price').value.trim(),
+        'originalprice': document.getElementById('originalprice').value.trim(),
+        'badge':         document.getElementById('badge').value.trim(),
+        'img':           document.getElementById('img').value.trim(),
+      };
+
+      // ── Loading state ──
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.classList.add('loading');
+      btn.querySelector('.btn-label').textContent = 'Submitting…';
+
+      try {
+        const params = new URLSearchParams(data);
+        const res    = await fetch(`${WEB_APP_URL}?${params}`);
+        const json   = await res.json();
+
+        if (json.status !== 'success') throw new Error(json.message || 'Server error');
+
+        // ── Show success overlay ──
+        document.getElementById('successProductName').textContent =
+          `"${data['card-name']}" has been added`;
+        document.getElementById('successOverlay').classList.add('visible');
+
+        // ── Redirect after 3.5 s (matches the progress bar animation) ──
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 3500);
+
+      } catch (err) {
+        // Re-enable button and show inline error
+        btn.disabled = false;
+        btn.classList.remove('loading');
+        btn.querySelector('.btn-label').textContent = 'Submit Product';
+        alert(`Submission failed: ${err.message}\n\nCheck that WEB_APP_URL is set correctly.`);
+        console.error('[add-product] submit error:', err);
+      }
+    }
+  </script>
+
+</body>
+</html>
