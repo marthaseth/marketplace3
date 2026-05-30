@@ -507,7 +507,7 @@
       const price     = (p['price']         || '').trim();
       const origPrice = (p['originalprice'] || p['original price'] || '').trim();
       const badge     = (p['badge']         || '').trim();
-      const img       = (p['img']           || '').trim();
+      const img = (p['image'] || p['img'] || 'https://via.placeholder.com/500x700').trim();
 
       const bc    = badgeClass(badge);
       const label = badgeLabel(badge);
