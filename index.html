@@ -538,9 +538,9 @@
       const name      = (p['card-name']     || p['cardname']     || 'Untitled').trim();
       const desc      = (p['desc']          || '').trim();
       const price     = (p['price']         || '').trim();
-      const origPrice = (p['originalprice'] || p['original price'] || '').trim();
+      const origPrice =(p['discount']       || p['originalprice'] || '').trim();
       const badge     = (p['badge']         || '').trim();
-      const img       = (p['img']           || '').trim();
+      const img       = (p['image']         || p['img']          || '').trim();
 
       const bc    = badgeClass(badge);
       const label = badgeLabel(badge);
